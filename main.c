@@ -2,13 +2,19 @@
 #include <stdlib.h>
 
 #define m 11
-#define null -1
-#define excluded -2
 
-void inicializaNulo (int T[m]){
+struct hash{
+    int chave;
+    int pos;
+    char *tabela;
+    int excluido : 1;
+    int nulo : 1;
+};
+
+void inicializaNulo (struct hash T[m], int tam){
     int i;
-    for (i = 0; i < m; i++){
-        T[i] = null;
+    for (i = 0; i < tam; i++){
+        T[i].nulo = 1;
     }
 }
 
@@ -20,80 +26,92 @@ int h2 (int chave){
     return (int)(m * (chave * 0.9 - (int)(chave * 0.9)));
 }
 
-int buscaT1 (int chave, int T1[m]){
+int busca (int chave, struct hash T1[m], struct hash T2[m]){
     int pos = h1(chave);
-    if (T1[pos] == null){
-        return null;
+    if (T1[pos].nulo)
+        return -1;
+    if (T1[pos].excluido){
+        pos = h2(chave);
+        if (T2[pos].nulo)
+            return -1;
+        else
+            return pos;
     }
-    else if (T1[pos] == excluded || T1[pos] != chave){
-        return excluded;
-    }
-    else
-        return pos;
+    return pos;
 }
 
-int buscaT2 (int chave, int T2[m]){
-    int pos = h2(chave);
-    if (T2[pos] != chave)
-        return null;
-    else
-        return pos;
-}
-
-void insere (int chave, int T1[m], int T2[m]){
-    int pos, chaveAntiga;
-    pos = h1(chave);
-    chaveAntiga = T1[pos];
+void insere (int chave, struct hash T1[m], struct hash T2[m]){
+    int pos1, pos2, chaveAntiga;
+    pos1 = h1(chave);
+    chaveAntiga = T1[pos1].chave;
     if (chaveAntiga == chave)
         return;
-    T1[pos] = chave;
-    if (chaveAntiga >= 0){
-        pos = h2(chaveAntiga);
-        T2[pos] = chaveAntiga;
+    if (!T1[pos1].nulo && !T1[pos1].excluido){
+        pos2 = h2(chaveAntiga);
+        T2[pos2].chave = chaveAntiga;
+        T2[pos2].nulo = 0;
+        T2[pos2].excluido = 0;
+        T2[pos2].pos = pos2;
+        T2[pos2].tabela = "T2";
     }
+    T1[pos1].chave = chave;
+    T1[pos1].nulo = 0;
+    T1[pos1].excluido = 0;
+    T1[pos1].pos = pos1;
+    T1[pos1].tabela = "T1";
 }
 
-void exclui (int chave, int T1[m], int T2[m]){
+void exclui (int chave, struct hash T1[m], struct hash T2[m]){
     int pos = h1(chave);
-    if (T1[pos] == null)
+    if (T1[pos].nulo)
         return;
-    else if (T1[pos] == chave)
-        T1[pos] = excluded;
+    else if (T1[pos].chave == chave)
+        T1[pos].excluido = 1;
     else{
         pos = h2(chave);
-        if (T2[pos] == chave)
-            T2[pos] = null;
+        if (T2[pos].chave == chave)
+            T2[pos].nulo = 1;
     }
 }
 
-void imprimeHash (int T1[m], int T2[m]){
-    for (int i = 0; i < m; i++){
-        if (T1[i] >=0 && T2[i] >=0){
-            if (T1[i]>=T2[i]){
-                printf ("%d,T1,%d\n", T1[i], i);
-                printf ("%d,T2,%d\n", T2[i], i);
-            }
-            else{
-                printf ("%d,T2,%d\n", T2[i], i);
-                printf ("%d,T1,%d\n", T1[i], i);
-            }
+int junta(struct hash T1[m], struct hash T2[m], struct hash aux[m*2]){
+    int pos = 0;
+    for (int i = 0; i < m; i++)
+        if (!T1[i].nulo && !T1[i].excluido){
+            aux[pos] = T1[i];
+            pos++;
         }
-        else if (T1[i] >= 0){
-            printf ("%d,T1,%d\n", T1[i], i);
+    for (int i = 0; i < m; i++)
+        if (!T2[i].nulo && !T2[i].excluido){
+            aux[pos] = T2[i];
+            pos++;
         }
-        else if (T2[i] >= 0){
-            printf ("%d,T2,%d\n", T2[i], i);
-        }
-    }
+    return pos;
+}
+
+int compara (const void *a, const void *b){
+    struct hash *x = (struct hash *)a;
+    struct hash *y = (struct hash *)b;
+    if (x->chave < y->chave)
+        return -1;
+    else if (x->chave > y->chave)
+        return 1;
+    else
+        return 0;
+}
+
+void imprimeHash (struct hash aux[m*2], int tam){
+    for (int i = 0; i < tam; i++)
+        printf ("%d,%s,%d\n", aux[i].chave, aux[i].tabela, aux[i].pos);
 }
 
 int main(){
-    int T1[m], T2[m];
-    int aux[m*2];
-    inicializaNulo(T1);
-    inicializaNulo(T2);
+    struct hash T1[m], T2[m], aux[m*2];
+    inicializaNulo(T1, m);
+    inicializaNulo(T2, m);
+    inicializaNulo (aux, m*2);
     char opcao;
-	int chave;
+	int chave, tam;
 	while (!feof(stdin)){
 		scanf(" %c %d", &opcao, &chave);
 		switch (opcao){
@@ -108,6 +126,8 @@ int main(){
 				exit(1);
 		}
 	}
-    imprimeHash (T1, T2);
+    tam = junta(T1, T2, aux);
+    qsort (aux, tam, sizeof(struct hash), compara);
+    imprimeHash(aux, tam);
     return 0;
 }
