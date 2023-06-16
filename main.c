@@ -2,19 +2,21 @@
 #include <stdlib.h>
 
 #define m 11
+#define nulo 0
+#define ocupado 1
+#define excluido 2
 
 struct hash{
     int chave;
     int pos;
     char *tabela;
-    int excluido : 1;
-    int nulo : 1;
+    char estado;
 };
 
 void inicializaNulo (struct hash T[m], int tam){
     int i;
     for (i = 0; i < tam; i++){
-        T[i].nulo = 1;
+        T[i].estado = nulo;
     }
 }
 
@@ -28,11 +30,11 @@ int h2 (int chave){
 
 int busca (int chave, struct hash T1[m], struct hash T2[m]){
     int pos = h1(chave);
-    if (T1[pos].nulo)
+    if (T1[pos].estado == nulo)
         return -1;
-    if (T1[pos].excluido){
+    if (T1[pos].estado == excluido){
         pos = h2(chave);
-        if (T2[pos].nulo)
+        if (T2[pos].estado == nulo)
             return -1;
         else
             return pos;
@@ -44,45 +46,43 @@ void insere (int chave, struct hash T1[m], struct hash T2[m]){
     int pos1, pos2, chaveAntiga;
     pos1 = h1(chave);
     chaveAntiga = T1[pos1].chave;
-    if (chaveAntiga == chave)
+    if (T1[pos1].estado == ocupado && chaveAntiga == chave)
         return;
-    if (!T1[pos1].nulo && !T1[pos1].excluido){
+    if (T1[pos1].estado == ocupado){
         pos2 = h2(chaveAntiga);
         T2[pos2].chave = chaveAntiga;
-        T2[pos2].nulo = 0;
-        T2[pos2].excluido = 0;
+        T2[pos2].estado = ocupado;
         T2[pos2].pos = pos2;
         T2[pos2].tabela = "T2";
     }
     T1[pos1].chave = chave;
-    T1[pos1].nulo = 0;
-    T1[pos1].excluido = 0;
+    T1[pos1].estado = ocupado;
     T1[pos1].pos = pos1;
     T1[pos1].tabela = "T1";
 }
 
 void exclui (int chave, struct hash T1[m], struct hash T2[m]){
     int pos = h1(chave);
-    if (T1[pos].nulo)
+    if (T1[pos].estado == nulo)
         return;
     else if (T1[pos].chave == chave)
-        T1[pos].excluido = 1;
+        T1[pos].estado = excluido;
     else{
         pos = h2(chave);
         if (T2[pos].chave == chave)
-            T2[pos].nulo = 1;
+            T2[pos].estado = excluido;
     }
 }
 
 int junta(struct hash T1[m], struct hash T2[m], struct hash aux[m*2]){
     int pos = 0;
     for (int i = 0; i < m; i++)
-        if (!T1[i].nulo && !T1[i].excluido){
+        if (T1[i].estado == ocupado){
             aux[pos] = T1[i];
             pos++;
         }
     for (int i = 0; i < m; i++)
-        if (!T2[i].nulo && !T2[i].excluido){
+        if (T2[i].estado == ocupado){
             aux[pos] = T2[i];
             pos++;
         }
