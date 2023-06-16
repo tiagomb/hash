@@ -4,7 +4,7 @@
 
 ### Objetivo
 
-- O objetivo do trabalho é implementar um algoritmo de implementação, busca e exclusão de valores em uma tabela hash de endereçamento aberto.  Há duas tabelas, T1 e T2, de tamanho 11. A função hash de T1 é h1(chave) = chave mod 11, caso haja colisão na T1 (o endereço desejado já esteja ocupado), a chave nova é inserida no endereço retornado de h1 e a antiga é inserida em T2 pela função hash h2(chave) =  ⌊11 * (chave * 0.9 − ⌊chave * 0.9⌋)⌋. Caso haja colisão na T2, a chave antiga é substituida pela nova.
+- O objetivo do trabalho é implementar um algoritmo de inserção, busca e exclusão de valores em uma tabela hash de endereçamento aberto.  Há duas tabelas de tamanho 11, T1 e T2. A função hash de T1 é h1(chave) = chave mod 11, caso haja colisão(o endereço desejado já esteja ocupado) em T1, a chave nova é inserida no endereço retornado de h1 e a antiga é inserida em T2 pela função hash h2(chave) =  ⌊11 * (chave * 0.9 − ⌊chave * 0.9⌋)⌋. Caso haja colisão na T2, a chave antiga é substituida pela nova.
 
 ### Implementação
 
@@ -12,22 +12,21 @@
 ```c
 struct hash T1[m], T2[m]
 ```
-- A struct hash possui os elementos chave, pos(endereço), tabela(string indentificando a tabela do elemento), excluido(informa se o elemento naquele endereço foi excluido, 1, ou não, 0) e nulo(informa se já house algum elemento naquele endereço, 0, ou não, 1).
+- A struct hash possui os elementos chave, pos(endereço), tabela(string indentificando a tabela do elemento), e estado(informa se o elemento do endereço é nulo(ou seja, nunca houve um elemento nele), 0, se o enedereço está ocupado, 1, ou se o elemento foi excluído, 2).
 
 ```c
 struct hash{
     int chave;
     int pos;
     char *tabela;
-    int excluido : 1;
-    int nulo : 1;
+    char estado;
 };
 ```
-- Inicialmente todas as structs de T1 e T2 têm seu elemento nulo inicializado com 1.
+- Inicialmente todas as structs de T1 e T2 têm seus estados inicializados como nulo.
 
-- A função de busca inicialmente usa h1 para encontra o elemento em T1, se encontrado, o endereço é retornado. Se a posição em T1 for nula, a busca retorna -1, não há necessidade de buscar em T2. Se o elemento está marcado como excluído, h2 é utilizado para fazer a busca em T2, retornado o endereço caso o elemento tenha o campo nulo 0 e -1 caso contrário
-
-- A função de inserção insere em T1 pelo endereço retornado por h1 se o endereço for nulo ou excluido, atualizando os valores da chave, nulo, excluido, pos e tabela. Caso o endereço esteja ocupado em T1 e a chave antiga seja a mesma ela não altera a tabela. Caso o endereço esteja ocupado em T1 e a chave antiga seja diferente, o elemento é inserido em T2 no endereço retornado por h2, independente da presença de uma chave antiga, também atualizando os valores da chave, nulo, excluido, pos e tabela.
+- A função de busca inicialmente usa h1 para encontra o elemento em T1, se encontrado, o endereço é retornado. Se a posição em T1 for nula, a busca retorna -1, não há necessidade de buscar em T2. Se o elemento está marcado como excluído, h2 é utilizado para fazer a busca em T2, retornado -1 caso o endereço tenha o estado nulo e -1 caso contrário
+// a busca esta errada, arrumar dps
+- A função de inserção insere em T1 pelo endereço retornado por h1 se o endereço desejado não estiver ocupado nem com a chave antiga com o mesmo valor da atual, atualizando os valores da chave, estado, pos e tabela. Caso o endereço esteja ocupado em T1 e a chave antiga seja a mesma que a atual, ela não altera a tabela. Caso o endereço esteja ocupado em T1 e a chave antiga seja diferente, o elemento é inserido em T2 no endereço retornado por h2, independente da presença de uma chave antiga, também atualizando os valores da chave, estado, pos e tabela.
 
 ```c
 void insere (int chave, struct hash T1[m], struct hash T2[m]){
@@ -51,7 +50,7 @@ void insere (int chave, struct hash T1[m], struct hash T2[m]){
     T1[pos1].tabela = "T1";
 }
 ```
-- A função de exlusão não altera a tabela caso o endereço do elemento em T1 seja nulo, caso contrário; se a chave for encontrado em T1 por h1 ela é marcada como excluída, se não, ela é buscada em T2 por h2 e, se encontrada, marcada com excluída. Se a chave não for encontrada a função não altera a tabela
+- A função de exlusão não altera a tabela caso o endereço do elemento em T1 seja nulo, caso contrário; se a chave for encontrado em T1 por h1 ela é marcada como excluída, se não, ela é buscada em T2 por h2 e, se encontrada, marcada com excluída. Se a chave não for encontrada a função não altera a tabela.
 
 ```c
 void exclui (int chave, struct hash T1[m], struct hash T2[m]){
