@@ -29,7 +29,7 @@ int busca (int chave, struct hash T1[m], struct hash T2[m]);
 insere a chave antiga na tabela 2*/
 void insere (int chave, struct hash T1[m], struct hash T2[m]);
 
-/*Exclui a chave das tabelas. Caso a chave não esteja presente, não faz nada. Caso contrário, exclui a chave da tabela 1 (marcando a posição como exclúida 
+/*Exclui a chave das tabelas. Caso a chave não esteja presente, não faz nada. Caso contrário, exclui a chave da tabela 1 (marcando a posição como excluída 
 para ajudar na busca) e, caso haja colisão, exclui a chave da tabela 2 (marcando a posição como nula)*/
 void exclui (int chave, struct hash T1[m], struct hash T2[m]);
 
