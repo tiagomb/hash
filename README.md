@@ -4,7 +4,7 @@
 
 ### Objetivo
 
-- O objetivo do trabalho é implementar um algoritmo de inserção, busca e exclusão de valores em uma tabela hash de endereçamento aberto.  Há duas tabelas de tamanho 11, T1 e T2. A função hash de T1 é h1(chave) = chave mod 11, caso haja colisão(o endereço desejado já esteja ocupado) em T1, a chave nova é inserida no endereço retornado de h1 e a antiga é inserida em T2 pela função hash h2(chave) =  ⌊11 * (chave * 0.9 − ⌊chave * 0.9⌋)⌋. Caso haja colisão na T2, a chave antiga é substituida pela nova.
+- O objetivo do trabalho é implementar um algoritmo de inserção, busca e exclusão de valores em uma tabela hash de endereçamento aberto.  Há duas tabelas de tamanho 11, T1 e T2. A função hash de T1 é h1(chave) = chave mod 11, e a de T2 é h2(chave) =  ⌊11 * (chave * 0.9 − ⌊chave * 0.9⌋)⌋.
 
 ### Implementação
 
