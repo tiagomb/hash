@@ -12,7 +12,7 @@
 ```c
 struct hash T1[m], T2[m]
 ```
-- A struct hash possui os elementos chave, pos(endereço), tabela(string indentificando a tabela do elemento), e estado(informa se o elemento do endereço é nulo(ou seja, nunca houve um elemento nele), 0, se o enedereço está ocupado, 1, ou se o elemento foi excluído, 2).
+- A struct hash possui os elementos chave, pos(endereço), tabela(string indentificando a tabela da chave), e estado(informa se o elemento do endereço é nulo(ou seja, não há uma chave válida nele), 0, se o endereço está ocupado, 1, ou se a chave foi excluída, 2).
 
 ```c
 struct hash{
@@ -24,8 +24,25 @@ struct hash{
 ```
 - Inicialmente todas as structs de T1 e T2 têm seus estados inicializados como nulo.
 
-- A função de busca inicialmente usa h1 para encontrar o elemento em T1, se encontrado, o endereço é retornado. Se a posição em T1 for nula, a busca retorna -1, não há necessidade de buscar em T2. Se o elemento está marcado como excluído ou é diferente do buscado, h2 é utilizada para fazer a busca em T2, retornando -1 caso o endereço tenha o estado nulo ou a chave presente seja diferente da buscada, e a posição, caso contrário
-- A função de inserção insere a chave nova em T1 na posição retornada por h1, exceto se essa chave já estiver na tabela (nesse caso, a função ignora a duplicata e não faz nada). Caso haja uma chave nessa posição, ela é movida para T2 na posição retornada por h2.
+- A função de busca inicialmente usa h1 para encontrar a chave em T1, se encontrada, seu endereço é retornado. Se a posição em T1 for nula, a busca retorna -1, não há necessidade de buscar em T2. Se a chave está marcado como excluída ou é diferente da buscada, h2 é utilizada para fazer a busca em T2, retornando -1 caso o endereço tenha o estado nulo ou a chave presente seja diferente da buscada, e a posição, caso contrário.
+```c
+void insere (int chave, struct hash T1[m], struct hash T2[m]){
+    int busca (int chave, struct hash T1[m], struct hash T2[m]){
+    int pos = h1(chave);
+    if (T1[pos].estado == nulo)
+        return -1;
+    if (T1[pos].estado == excluido || T1[pos].chave != chave){
+        pos = h2(chave);
+        if (T2[pos].estado == nulo || T2[pos].chave != chave)
+            return -1;
+        else
+            return pos;
+    }
+    return pos;
+}
+}
+```
+- A função de inserção insere a chave nova em T1 na posição retornada por h1, exceto se essa chave já estiver na tabela (nesse caso, a função ignora a duplicata e não altera a tabela). Caso o endereço ja estivesse ocupado, a chave antiga é movida para T2 na posição retornada por h2.
   
 
 ```c
@@ -47,7 +64,7 @@ void insere (int chave, struct hash T1[m], struct hash T2[m]){
     T1[pos1].tabela = "T1";
 }
 ```
-- A função de exclusão, ao invés de remover de fato a chave, apenas altera o estado da posição que ela ocupa. Ou seja, caso a chave seja encontrada em T1, sua posição é marcada como excluída, para auxiliar no algoritmo de busca. Caso seja encontrada em T2, sua posição é marcada como nula, uma vez que nenhuma outra chave depende dessa para a busca. Caso não seja encontrada, nada acontece.
+- A função de exclusão, ao invés de remover de fato a chave, apenas altera o estado da posição que ela ocupa. Ou seja, caso a chave seja encontrada em T1, sua posição é marcada como excluída, para auxiliar no algoritmo de busca. Caso seja encontrada em T2, sua posição é marcada como nula, uma vez que nenhuma outra chave depende dessa para a busca. Caso não seja encontrada, nada é alterado.
 
 ```c
 void exclui (int chave, struct hash T1[m], struct hash T2[m]){
