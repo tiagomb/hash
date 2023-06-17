@@ -26,8 +26,7 @@ struct hash{
 
 - A função de busca inicialmente usa h1 para encontrar a chave em T1, se encontrada, seu endereço é retornado. Se a posição em T1 for nula, a busca retorna -1, não há necessidade de buscar em T2. Se a chave está marcado como excluída ou é diferente da buscada, h2 é utilizada para fazer a busca em T2, retornando -1 caso o endereço tenha o estado nulo ou a chave presente seja diferente da buscada, e a posição, caso contrário.
 ```c
-void insere (int chave, struct hash T1[m], struct hash T2[m]){
-    int busca (int chave, struct hash T1[m], struct hash T2[m]){
+int busca (int chave, struct hash T1[m], struct hash T2[m]){
     int pos = h1(chave);
     if (T1[pos].estado == nulo)
         return -1;
@@ -39,7 +38,6 @@ void insere (int chave, struct hash T1[m], struct hash T2[m]){
             return pos;
     }
     return pos;
-}
 }
 ```
 - A função de inserção insere a chave nova em T1 na posição retornada por h1, exceto se essa chave já estiver na tabela (nesse caso, a função ignora a duplicata e não altera a tabela). Caso o endereço ja estivesse ocupado, a chave antiga é movida para T2 na posição retornada por h2.
