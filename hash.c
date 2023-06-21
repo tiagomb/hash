@@ -34,7 +34,6 @@ int busca (int chave, struct hash T1[m], struct hash T2[m]){
 void insere (int chave, struct hash T1[m], struct hash T2[m]){
     int pos1, pos2;
     pos1 = h1(chave);
-    pos2 = h2(chave);
     if (T1[pos1].estado == ocupado && T1[pos1].chave == chave)
         return;
     if (T1[pos1].estado == ocupado){
