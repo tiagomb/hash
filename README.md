@@ -12,7 +12,7 @@
 ```c
 struct hash T1[m], T2[m]
 ```
-- A struct hash possui os elementos chave, pos(endereço), tabela(string indentificando a tabela da chave), e estado(informa se o elemento do endereço é nulo(ou seja, não há uma chave válida nele), 0, se o endereço está ocupado, 1, ou se a chave foi excluída, 2).
+- A struct hash possui os elementos: chave, pos(endereço), tabela(string indentificando a tabela da chave), e estado(informa se o elemento do endereço é nulo(ou seja, não há uma chave válida nele), 0, se o endereço está ocupado, 1, ou se a chave foi excluída, 2).
 
 ```c
 struct hash{
@@ -40,8 +40,7 @@ int busca (int chave, struct hash T1[m], struct hash T2[m]){
     return pos;
 }
 ```
-- A função de inserção insere a chave nova em T1 na posição retornada por h1, exceto se essa chave já estiver na tabela (nesse caso, a função ignora a duplicata e não altera a tabela). Caso o endereço ja estivesse ocupado, a chave antiga é movida para T2 na posição retornada por h2.
-  
+- A função de inserção insere a chave nova em T1 na posição retornada por h1, exceto se essa chave já esteja na tabela (nesse caso, a função ignora a duplicata e não altera a tabela). Caso o endereço estivesse ocupado antes da inserção, a chave antiga também é movida para T2 na posição retornada por h2.
 
 ```c
 void insere (int chave, struct hash T1[m], struct hash T2[m]){
@@ -78,7 +77,7 @@ void exclui (int chave, struct hash T1[m], struct hash T2[m]){
     }
 }
 ```
-- Para facilitar a impressão, as tabelas hash são unidas em uma tabela hash auxiliar, que é então organizada em ordem crescente por meio da função qsort para que ela finalmente possa ser impressa na ordem desejada. A função qsort recebe como função de comparação a função "compara", que compara as chaves das structs para a ordenação:
+- Para facilitar a impressão, as tabelas hash são unidas pela função "junta" em uma tabela hash auxiliar, que é então organizada em ordem crescente por meio da função qsort para que ela finalmente possa ser impressa na ordem desejada. A função qsort recebe como função de comparação a função "compara", que compara as chaves das structs para a ordenação:
 
 ```c
 int compara (const void *a, const void *b){
